@@ -1,0 +1,99 @@
+version: '3.4'
+
+services:
+
+  website:
+    build: .
+    command: >
+      gunicorn -b 0.0.0.0:8010 --access-logfile - --reload "pricechecker.app:create_app()" -t 9000
+    restart: always
+    env_file:
+      - '.env'
+    volumes:
+      - '.:/pricechecker'
+    ports:
+      - '8010:8010'
+
+
+  selenium:
+    image: selenium/standalone-chrome
+    ports:
+    - 4444:4444
+
+
+volumes:
+  selenium:
+
+  # selenium-hub:
+  #   image: selenium/hub:3.141.59-20210929
+  #   container_name: selenium-hub
+  #   ports:
+  #     - "4444:4444"
+
+  # chrome:
+  #   image: selenium/node-chrome:3.141.59-20210929
+  #   volumes:
+  #     - /dev/shm:/dev/shm
+  #   depends_on:
+  #     - selenium-hub
+  #   environment:
+  #     - HUB_HOST=selenium-hub
+  #     - HUB_PORT=4444
+
+
+
+
+  # redis:
+  #     image: 'redis:3.0-alpine'
+  #     command: redis-server --requirepass Bloverse2021
+  #     volumes:
+  #       - 'redis:/var/lib/redis/data'
+  #     ports:
+  #       - '6379:6379'
+
+  # celery_account:
+  # gunicorn -b 0.0.0.0:8001 --access-logfile - --reload "twitterbot.app:create_app()" -t 15
+  #   build: .
+  #   #command: celery worker -l info -A accountbot.tasks
+  #   command: celery -A bot_accounts_service.tasks.account.celery worker -B -l info -E -Q account
+  #   env_file:
+  #     - '.env'
+  #   volumes:
+  #     - '.:/bot_accounts_service'
+
+  # celery_content:
+  #   build: .
+  #   command: celery -A bot_content_service.tasks.content.celery worker -B -l info -E -Q content
+  #   env_file:
+  #     - '.env'
+  #   volumes:
+  #     - '.:/bot_content_service'
+
+  # celery_analysis:
+  #   build: .
+  #   command: celery -A bot_analysis_service.tasks.analysis.celery worker -B -l info -E -Q analysis
+  #   env_file:
+  #     - '.env'
+  #   volumes:
+  #     - '.:/bot_analysis_service'
+
+  # celery_twitter:
+  #   build: .
+  #   command: celery -A twitterbot.tasks.twitter.celery worker -B -l info -E -Q twitter
+  #   env_file:
+  #     - '.env'
+  #   volumes:
+  #     - '.:/twitterbot'
+
+  # proxy:
+  #   build: proxy
+  #   restart: always
+  #   ports:
+  #     - "81:81"
+
+
+   
+# volumes:
+#   redis:
+
+
