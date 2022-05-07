@@ -63,6 +63,7 @@ def create_app(settings_override=None):
     app.logger.setLevel(app.config['LOG_LEVEL'])
     app.register_blueprint(price)
     
+    app.secret_key = "price"
 
     return app
 

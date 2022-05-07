@@ -73,21 +73,30 @@
             <button type="submit" class="btn btn-primary mb-2">SEND</button>
           </div>
       </form>
-            
+        
+      <div class="div_flash">
 
-
+      {% with messages =  get_flashed_messages() %}
+      {% for msg in messages%}
+        {{msg}}
+      {% endfor %}
+      {% endwith %}
+      </div>
+      
       <form>
         <div class="div_style2">
             <label for="Result"> <b> Result: </b></label>
             <textarea class="input_style2"  type="text">
 
-              {% for item in  result %}
-             {{item.name}}
-               {{item.price}}
-               {{item.link}}
-               {{item.image}} 
-              {% endfor %}
-            </textarea>
+       Name:   {{result.name}}
+             
+       Price:  {{result.price}}
+               
+       link:   {{result.link}}
+            
+       Image:  {{result.image}} 
+            
+          </textarea>
           </div>
 
       </form>
@@ -100,16 +109,16 @@
     </main>
 
     <footer class="container">
-      <p>&copy; Company 2017-2018</p>
+      <p>PRICE CHECKER</p>
     </footer>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-    <script src="../../assets/js/vendor/popper.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/static/js/jquery-slim.min.js"><\/script>')</script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
   </body>
 </html>
 

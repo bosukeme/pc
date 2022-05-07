@@ -16,9 +16,8 @@ options.add_argument('--headless')
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 options.add_argument("disable-infobars")
 
-
-from ordered_set import OrderedSet
 from bs4 import BeautifulSoup
+import random
 
 
 
@@ -74,11 +73,9 @@ def scroll_down_the_page(driver):
             sleep(2)
 
             # driver.find_elements_by_class_name("_1RtJV product-img")
-
-            
+    
             list_of_items.append(search_items)
-            
-
+        
             # Calculate new scroll height and compare with last scroll height
             new_height = driver.execute_script(f"return {new_height+350}")
             print(new_height)
@@ -112,6 +109,18 @@ def create_name_price(item):
 #     return image_links
 
 
+def parse_naira(dict_):
+    try:
+        price = dict_.get('price')
+        price = price.split("NGN")[1]
+        price = float(price.replace(",",""))
+        dict_['price'] = price
+    except:
+        dict_ = {}
+    return dict_
+
+
+
 def create_link_image(soup):
     
     try:
@@ -133,7 +142,9 @@ def create_link_image(soup):
 
 
 
-def start_price_checker(search_item):
+def check_ali_express_price(search_item):
+    search_item = "+".join(search_item.split(" "))
+
     url = "https://www.aliexpress.com/"
     driver = open_browser(url)
 
@@ -143,28 +154,88 @@ def start_price_checker(search_item):
     #sorting
     class_path_text = "[class='svg-icon m price-order']"
     driver.find_element_by_css_selector(class_path_text).click()
+    sleep(3)
 
     search_items = driver.find_elements_by_class_name("_3t7zg")
-    search_items = [item.text for item in search_items]
+    search_items = [[item.text for item in search_items][0]]
     sleep(2)
 
-
-    # list_of_items = scroll_down_the_page(driver)
-    # list_of_items = [a for b in list_of_items for a in b]
-    # list_of_items = OrderedSet(list_of_items)
+    search_items = [create_name_price(item) for item in search_items]
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     image_links = create_link_image(soup)
-    image_links = image_links[:len(search_items)]
+    image_links = image_links[:len(search_items)][0]
 
 
-    search_items = [create_name_price(item) for item in search_items]
-    print
+    
+    search_items = [parse_naira(item) for item in search_items][0]
+    
+    full_item = {**search_items, **image_links }
 
-    all_items = []
-    for index in range(len(search_items)):
-        items = {**search_items[index], **image_links[index]}
-        all_items.append(items)
     
     driver.quit()
-    return all_items[:1]
+
+    return full_item
+
+
+def check_jumia_price(search_item):
+    search_item = "+".join(search_item.split(" "))
+    url = f"https://www.jumia.com.ng/catalog/?q={search_item}&sort=lowest-price#catalog-listing"
+
+    driver = open_browser(url)
+
+    try:
+        names = driver.find_elements_by_class_name("name")
+        names = [a.text for a in names][0]
+    except:
+        names = "NA"
+
+    try:
+        images = driver.find_elements_by_class_name("img")
+        images = [c.get_attribute("src") for c in images][0]
+    except:
+        images = "NA"
+    
+    try:
+        links = driver.find_elements_by_class_name("core") 
+        links = [a.get_attribute("href") for a in links][0]
+    except:
+        links = "NA"
+
+    try:
+        price = driver.find_elements_by_class_name("prc")
+        price = [a.text for a in price][0]
+        price = int(price.split(" ")[1])
+    except:
+        price = "NA"
+
+    data = {
+        "name": names,
+        "image": images,
+        "link": links,
+        "price": price
+    }
+    driver.quit()
+    return data
+
+
+def start_price_checker(search_item):
+    from flask import flash
+    try:
+        jumia_data = check_jumia_price(search_item)
+        flash("Finished scrapping Jumia. Now Scrapping Ali Express. Hang tight", "info")
+        
+        ali_express_data = check_ali_express_price(search_item)
+        
+        if jumia_data['price'] > ali_express_data['price']:
+            return ali_express_data
+        elif jumia_data['price'] < ali_express_data['price']:
+            return jumia_data
+        elif jumia_data['price'] == ali_express_data['price']:
+            return random.choice([jumia_data, ali_express_data])
+        else:
+            return {"name": "NA", "price":"NA", "image":"NA", "link":"NA"}
+
+    except Exception as e:
+        print(e)
+
