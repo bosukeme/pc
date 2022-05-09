@@ -18,7 +18,7 @@ options.add_argument("disable-infobars")
 
 from bs4 import BeautifulSoup
 import random
-
+from flask import flash, render_template, make_response
 
 
 def open_browser(topic_url):
@@ -216,14 +216,14 @@ def check_jumia_price(search_item):
         "price": price
     }
     driver.quit()
+    
     return data
 
 
 def start_price_checker(search_item):
-    from flask import flash
+    
     try:
         jumia_data = check_jumia_price(search_item)
-        flash("Finished scrapping Jumia. Now Scrapping Ali Express. Hang tight", "info")
         
         ali_express_data = check_ali_express_price(search_item)
         

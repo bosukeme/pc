@@ -7,11 +7,12 @@ from pricechecker.resources.price_checker_resources import PriceCheckerResource
 class Home(Resource):
     def post(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template("home.html"), headers)
+        return make_response(render_template("home2.html"), headers)
 
     def get(self):
+        result = {"name": "", "price":"", "image":"", "link":""}
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template("home.html"), headers)
+        return make_response(render_template("home.html", result=result), headers)
 
 
 
