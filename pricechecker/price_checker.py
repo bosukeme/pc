@@ -112,13 +112,17 @@ def create_name_price(item):
 def parse_naira(dict_):
     try:
         price = dict_.get('price')
-        price = price.split("NGN")[1]
-        price = float(price.replace(",",""))
-        dict_['price'] = price
+        if "NGN" in price:
+            price = price.split("NGN")[1]
+            price = float(price.replace(",",""))
+            dict_['price'] = price
+        elif "US $" in price:
+            price = price.split("US $")[1]
+            price = float(price.replace(",",""))
+            dict_['price'] = round(price * 350,2)
     except:
         dict_ = {}
     return dict_
-
 
 
 def create_link_image(soup):
