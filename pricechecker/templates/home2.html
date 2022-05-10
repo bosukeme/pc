@@ -77,18 +77,23 @@
       
       <form>
         <div class="div_style2">
-            <label for="Result"> <b> Result: </b></label>
-            <textarea class="input_style2"  type="text">
 
-       Name:   {{result.name}}
-             
-       Price:  {{result.price}}
-               
-       link:   {{result.link}}
+            <!-- <label for="Result"> <b> Result: </b></label> -->
+
+
+            <!-- <textarea class="input_style2"  type="text"> -->
+
+      <b> NAME: </b>   {{result.name | safe}}
+        <br>
+        <br>
+       <b>PRICE: </b>   {{result.price | safe}}
+        <br>
+        <br>    
+       <b>LINK: </b><a href="{{result.link | safe}}" target="_blank" class="a_tag">   {{result.link | safe}} </a>
+        <br>
+        <br>     
+       <b>IMAGE: </b>    {{result.image | safe}} 
             
-       Image:  {{result.image}} 
-            
-          </textarea>
           </div>
 
       </form>

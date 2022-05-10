@@ -10,7 +10,8 @@ class PriceCheckerResource(Resource):
             result = start_price_checker(json_data)
             headers = {'Content-Type': 'text/html'}
 
-            return make_response(render_template("home2.html", result=result), headers)
+            # return render_template("home2.html", result=result)
+            return make_response(render_template("home2.html", result=result))
 
         except Exception as e:
             return {
